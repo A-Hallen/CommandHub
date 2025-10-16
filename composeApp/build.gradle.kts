@@ -61,31 +61,113 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.hallen.commandhub"
+            
+            // Información básica de la aplicación
+            packageName = "CommandHub"
             packageVersion = "1.0.0"
+            description = "Gestor moderno de comandos de terminal con interfaz gráfica"
+            copyright = "© 2025 Hallen. All rights reserved."
+            vendor = "Adrian Hallen"
+            licenseFile.set(project.rootProject.file("LICENSE"))
             
             // Incluir todas las dependencias runtime
             includeAllModules = true
             
+            // Módulos adicionales de Java que se necesitan
+            modules(
+                "java.sql",
+                "java.naming",
+                "jdk.unsupported"
+            )
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 🪟 WINDOWS - Configuración del instalador MSI
+            // ═══════════════════════════════════════════════════════════════
             windows {
-                // Icono para Windows (.ico) - aparecerá en la barra de tareas y el ejecutable
-                // Coloca tu archivo app_icon.ico en la carpeta composeApp/
+                // Icono del ejecutable y barra de tareas
                 val customIconFile = project.file("app_icon.ico")
                 if (customIconFile.exists()) {
                     iconFile.set(customIconFile)
-                    println("Usando icono personalizado: ${customIconFile.absolutePath}")
+                    println("✅ Icono Windows configurado: ${customIconFile.absolutePath}")
                 } else {
-                    println("ADVERTENCIA: No se encontró app_icon.ico en ${customIconFile.absolutePath}")
-                    println("La aplicación usará el icono por defecto de Windows")
+                    println("⚠️  No se encontró app_icon.ico - usando icono por defecto")
                 }
+                
+                // Crear menú de inicio
+                menu = true
+                menuGroup = "CommandHub"
+                
+                // Crear acceso directo en el escritorio
+                shortcut = true
+                dirChooser = true
+                
+                // Información del instalador
+                upgradeUuid = "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"
+                
+                // Configuración del MSI
+                perUserInstall = false  // Instalación para todos los usuarios
+                
+                // Vendor y metadatos
+                menuGroup = "CommandHub"
             }
             
+            // ═══════════════════════════════════════════════════════════════
+            // 🐧 LINUX - Configuración del paquete DEB
+            // ═══════════════════════════════════════════════════════════════
             linux {
-                // Configuración de Linux si es necesario
+                // Icono de la aplicación (PNG)
+                val linuxIconFile = project.file("src/jvmMain/composeResources/drawable/app_icon.png")
+                if (linuxIconFile.exists()) {
+                    iconFile.set(linuxIconFile)
+                    println("✅ Icono Linux configurado: ${linuxIconFile.absolutePath}")
+                }
+                
+                // Nombre del paquete (sin espacios, lowercase)
+                packageName = "commandhub"
+                
+                // Crear acceso directo en el menú
+                shortcut = true
+                
+                // Categorías según freedesktop.org
+                appCategory = "Development;Utility;TerminalEmulator"
+                
+                // Release number para actualizaciones
+                debMaintainer = "contact@example.com"
+                debPackageVersion = "1"
+                
+                // Menú de aplicaciones
+                menuGroup = "Development"
             }
             
+            // ═══════════════════════════════════════════════════════════════
+            // 🍎 macOS - Configuración del paquete DMG
+            // ═══════════════════════════════════════════════════════════════
             macOS {
-                // Configuración de macOS si es necesario
+                // Bundle identifier único
+                bundleID = "org.hallen.commandhub"
+                
+                // Icono de la aplicación (.icns)
+                val macIconFile = project.file("app_icon.icns")
+                if (macIconFile.exists()) {
+                    iconFile.set(macIconFile)
+                    println("✅ Icono macOS configurado: ${macIconFile.absolutePath}")
+                } else {
+                    println("💡 Tip: Crea app_icon.icns para personalizar el icono en macOS")
+                }
+                
+                // Configuración del DMG
+                dmgPackageVersion = "1.0.0"
+                dmgPackageBuildVersion = "1"
+                
+                // Agregar al dock
+                dockName = "CommandHub"
+                
+                // Información adicional
+                appCategory = "public.app-category.developer-tools"
+                
+                // Entitlements para permisos (si es necesario en el futuro)
+                // entitlementsFile.set(project.file("entitlements.plist"))
+                // runtimeEntitlementsFile.set(project.file("runtime-entitlements.plist"))
             }
         }
         
