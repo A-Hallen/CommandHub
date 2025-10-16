@@ -1,0 +1,51 @@
+CREATE TABLE ExecutionEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    commandId INTEGER NOT NULL,
+    output TEXT NOT NULL DEFAULT '',
+    errorOutput TEXT NOT NULL DEFAULT '',
+    exitCode INTEGER,
+    status TEXT NOT NULL DEFAULT 'RUNNING',
+    startTime INTEGER NOT NULL,
+    endTime INTEGER,
+    duration INTEGER,
+    FOREIGN KEY (commandId) REFERENCES CommandEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX execution_command_idx ON ExecutionEntity(commandId);
+CREATE INDEX execution_start_time_idx ON ExecutionEntity(startTime);
+
+-- Queries
+
+selectByCommand:
+SELECT * FROM ExecutionEntity
+WHERE commandId = ?
+ORDER BY startTime DESC
+LIMIT 50;
+
+selectById:
+SELECT * FROM ExecutionEntity
+WHERE id = ?;
+
+insert:
+INSERT INTO ExecutionEntity(
+    commandId, output, errorOutput, exitCode,
+    status, startTime, endTime, duration
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE ExecutionEntity
+SET output = ?, errorOutput = ?, exitCode = ?,
+    status = ?, endTime = ?, duration = ?
+WHERE id = ?;
+
+deleteByCommand:
+DELETE FROM ExecutionEntity
+WHERE commandId = ?;
+
+deleteOldHistory:
+DELETE FROM ExecutionEntity
+WHERE startTime < ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

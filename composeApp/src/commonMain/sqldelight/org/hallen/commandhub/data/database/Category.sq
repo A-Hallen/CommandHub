@@ -1,0 +1,38 @@
+CREATE TABLE CategoryEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    color TEXT NOT NULL DEFAULT '#03DAC6',
+    icon TEXT,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX category_name_idx ON CategoryEntity(name);
+
+-- Queries
+
+selectAll:
+SELECT * FROM CategoryEntity
+ORDER BY name ASC;
+
+selectById:
+SELECT * FROM CategoryEntity
+WHERE id = ?;
+
+insert:
+INSERT INTO CategoryEntity(
+    name, description, color, icon, createdAt
+)
+VALUES (?, ?, ?, ?, ?);
+
+update:
+UPDATE CategoryEntity
+SET name = ?, description = ?, color = ?, icon = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM CategoryEntity
+WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

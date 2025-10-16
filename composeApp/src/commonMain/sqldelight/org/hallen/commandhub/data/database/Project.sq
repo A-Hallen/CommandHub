@@ -1,0 +1,42 @@
+CREATE TABLE ProjectEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    color TEXT NOT NULL DEFAULT '#6200EE',
+    icon TEXT,
+    defaultWorkingDirectory TEXT NOT NULL DEFAULT '',
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL
+);
+
+CREATE INDEX project_name_idx ON ProjectEntity(name);
+
+-- Queries
+
+selectAll:
+SELECT * FROM ProjectEntity
+ORDER BY name ASC;
+
+selectById:
+SELECT * FROM ProjectEntity
+WHERE id = ?;
+
+insert:
+INSERT INTO ProjectEntity(
+    name, description, color, icon,
+    defaultWorkingDirectory, createdAt, updatedAt
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE ProjectEntity
+SET name = ?, description = ?, color = ?,
+    icon = ?, defaultWorkingDirectory = ?, updatedAt = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM ProjectEntity
+WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

@@ -1,0 +1,81 @@
+CREATE TABLE CommandEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    command TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    workingDirectory TEXT NOT NULL DEFAULT '',
+    projectId INTEGER,
+    categoryId INTEGER,
+    isFavorite INTEGER NOT NULL DEFAULT 0,
+    tags TEXT NOT NULL DEFAULT '', -- JSON array serializado
+    shell TEXT NOT NULL DEFAULT 'POWERSHELL',
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (projectId) REFERENCES ProjectEntity(id) ON DELETE SET NULL,
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL
+);
+
+CREATE INDEX command_name_idx ON CommandEntity(name);
+CREATE INDEX command_project_idx ON CommandEntity(projectId);
+CREATE INDEX command_category_idx ON CommandEntity(categoryId);
+CREATE INDEX command_favorite_idx ON CommandEntity(isFavorite);
+
+-- Queries
+
+selectAll:
+SELECT * FROM CommandEntity
+ORDER BY updatedAt DESC;
+
+selectById:
+SELECT * FROM CommandEntity
+WHERE id = ?;
+
+selectByProject:
+SELECT * FROM CommandEntity
+WHERE projectId = ?
+ORDER BY name ASC;
+
+selectByCategory:
+SELECT * FROM CommandEntity
+WHERE categoryId = ?
+ORDER BY name ASC;
+
+selectFavorites:
+SELECT * FROM CommandEntity
+WHERE isFavorite = 1
+ORDER BY updatedAt DESC;
+
+search:
+SELECT * FROM CommandEntity
+WHERE name LIKE '%' || ? || '%'
+   OR description LIKE '%' || ? || '%'
+   OR command LIKE '%' || ? || '%'
+ORDER BY name ASC;
+
+insert:
+INSERT INTO CommandEntity(
+    name, command, description, workingDirectory,
+    projectId, categoryId, isFavorite, tags, shell,
+    createdAt, updatedAt
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE CommandEntity
+SET name = ?, command = ?, description = ?,
+    workingDirectory = ?, projectId = ?, categoryId = ?,
+    isFavorite = ?, tags = ?, shell = ?, updatedAt = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM CommandEntity
+WHERE id = ?;
+
+toggleFavorite:
+UPDATE CommandEntity
+SET isFavorite = CASE WHEN isFavorite = 1 THEN 0 ELSE 1 END,
+    updatedAt = ?
+WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
